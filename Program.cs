@@ -16,7 +16,7 @@ namespace Info_System
         public string Title { get; set; }
         public string Description { get; set; }
         public string Priority { get; set; }
-        public string Status { get; set; }  
+        public string Status { get; set; }
     }
 
     class UserManager
@@ -107,8 +107,21 @@ namespace Info_System
             return tasks;
         }
 
+        public TaskItem FindTask(string title)
+        {
+            var tasks = GetTasks();
+            return tasks.FirstOrDefault(t => t.Title.Equals(title, StringComparison.OrdinalIgnoreCase));
+        }
+
         public void EditTask(string title, TaskItem updatedTask)
         {
+            var existingTask = FindTask(title);
+            if (existingTask == null)
+            {
+                Console.WriteLine("Задача с таким заголовком не найдена.");
+                return;
+            }
+
             var tasks = GetTasks();
             try
             {
@@ -116,7 +129,7 @@ namespace Info_System
                 {
                     foreach (var task in tasks)
                     {
-                        if (task.Title == title)
+                        if (task.Title.Equals(title, StringComparison.OrdinalIgnoreCase))
                         {
                             task.Title = updatedTask.Title;
                             task.Description = updatedTask.Description;
@@ -136,6 +149,13 @@ namespace Info_System
 
         public void DeleteTask(string title)
         {
+            var existingTask = FindTask(title);
+            if (existingTask == null)
+            {
+                Console.WriteLine("Задача с таким заголовком не найдена.");
+                return;
+            }
+
             var tasks = GetTasks();
             try
             {
@@ -143,7 +163,7 @@ namespace Info_System
                 {
                     foreach (var task in tasks)
                     {
-                        if (task.Title != title)
+                        if (!task.Title.Equals(title, StringComparison.OrdinalIgnoreCase))
                         {
                             writer.WriteLine($"{task.Title}:{task.Description}:{task.Priority}:{task.Status}");
                         }
